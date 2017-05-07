@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QCompleter>
 #include <QTranslator>
+#include <QSettings>
 
 namespace Ui {
 class Interface;
@@ -35,6 +36,7 @@ protected:
     static QFileInfoList getFileList();
 
     QTranslator *translate;
+    QSettings *sets;
 
 private slots:
     void on_toolButton_clicked();

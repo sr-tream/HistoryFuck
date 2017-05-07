@@ -1,14 +1,13 @@
 #include "interface.h"
 #include "ui_interface.h"
-#include <QApplication>
-#include <QTranslator>
-#include <QLibraryInfo>
 
 Interface::Interface(QString progName, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Interface)
 {
     ui->setupUi(this);
+    sets = new QSettings(QApplication::applicationDirPath() + "/HistoryFuck.ini",
+                         QSettings::IniFormat, this);
     loadTranslators();
     myName = progName;
     initCompleter();
@@ -53,13 +52,18 @@ void Interface::loadTranslators()
             ui->language->addItem(exp.cap(1));
             isEmpty = false;
             static bool isLngSet = false;
-            if (!isLngSet){
+            if ( !isLngSet &&
+                    (sets->value("Language").toString().isEmpty() ||
+                    sets->value("Language").toString() == exp.cap(1)) ){
                 isLngSet = true;
                 translate->load(fileInfo.fileName(), QApplication::applicationDirPath());
                 QApplication::installTranslator(translate);
             }
         }
     }
+
+    if (!sets->value("Language").toString().isEmpty())
+        ui->language->setCurrentText(sets->value("Language").toString());
 
     if (isEmpty){
         ui->language->setHidden(true);
@@ -171,4 +175,5 @@ void Interface::on_language_activated(const QString &arg1)
 {
     translate->load("language_" + arg1, QApplication::applicationDirPath());
     QApplication::installTranslator(translate);
+    sets->setValue("Language", arg1);
 }

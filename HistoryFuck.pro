@@ -32,3 +32,7 @@ SOURCES += main.cpp\
 HEADERS  += interface.h
 
 FORMS    += interface.ui
+
+DISTFILES += \
+    language_English.ts \
+    language_Russian.ts

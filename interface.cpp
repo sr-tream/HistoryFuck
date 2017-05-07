@@ -6,7 +6,7 @@ Interface::Interface(QString progName, QWidget *parent) :
     ui(new Ui::Interface)
 {
     ui->setupUi(this);
-    sets = new QSettings(QApplication::applicationDirPath() + "/HistoryFuck.ini",
+    sets = new QSettings(QApplication::applicationDirPath() + "/" + progName + ".ini",
                          QSettings::IniFormat, this);
     loadTranslators();
     myName = progName;

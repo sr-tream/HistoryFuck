@@ -28,6 +28,7 @@ protected:
 
     virtual bool checkHistoryOf();
     virtual int countHistoryOf();
+    virtual void initCompleter();
 
 private slots:
     void on_toolButton_clicked();

@@ -7,21 +7,7 @@ Interface::Interface(QString progName, QWidget *parent) :
 {
     ui->setupUi(this);
     myName = progName;
-    autoComplete = new QCompleter(listHistoryOf(), this);
-    autoComplete->setCaseSensitivity(Qt::CaseInsensitive);
-//    QMessageBox msg;
-//    QDir dir(QDir::homePath());
-//    msg.setText(dir.path() + "\n" + QString::number(dir.entryInfoList().size())); msg.exec();
-//    dir.setPath(QDir::homePath() + "/AppData/");
-//    msg.setText(dir.path() + "\n" + QString::number(dir.entryInfoList().size())); msg.exec();
-//    dir.setPath(QDir::homePath() + "/AppData/Roaming/");
-//    msg.setText(dir.path() + "\n" + QString::number(dir.entryInfoList().size())); msg.exec();
-//    dir.setPath(QDir::homePath() + "/AppData/Roaming/Microsoft/");
-//    msg.setText(dir.path() + "\n" + QString::number(dir.entryInfoList().size())); msg.exec();
-//    dir.setPath(QDir::homePath() + "/AppData/Roaming/Microsoft/Windows/");
-//    msg.setText(dir.path() + "\n" + QString::number(dir.entryInfoList().size())); msg.exec();
-//    dir.setPath(QDir::homePath() + "/AppData/Roaming/Microsoft/Windows/Recent/");
-//    msg.setText(dir.path() + "\n" + QString::number(dir.entryInfoList().size())); msg.exec();
+    initCompleter();
 }
 
 Interface::~Interface()
@@ -127,6 +113,13 @@ int Interface::countHistoryOf()
     return count;
 }
 
+void Interface::initCompleter()
+{
+    autoComplete = new QCompleter(listHistoryOf(), this);
+    autoComplete->setCaseSensitivity(Qt::CaseInsensitive);
+    ui->file->setCompleter(autoComplete);
+}
+
 QStringList Interface::listHistoryOf()
 {
     QStringList retList;
@@ -172,7 +165,6 @@ void Interface::on_file_textChanged(const QString &arg1)
 {
     if (checkHistoryOf()){
         ui->clear->setEnabled(true);
-        ui->file->setCompleter(autoComplete);
         ui->matches->setText("Совпадений: " + QString::number(countHistoryOf()));
     } else {
         ui->clear->setEnabled(false);
@@ -184,4 +176,6 @@ void Interface::on_clear_clicked()
 {
     fuckHistoryOf(ui->file->text());
     ui->file->clear();
+    delete autoComplete;
+    initCompleter();
 }

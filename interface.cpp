@@ -41,8 +41,10 @@ void Interface::fuckHistoryOf(QString fileName)
         if (fileInfo.fileName() == "." || fileInfo.fileName() ==  "..")
             continue;
         if (fileInfo.fileName().toLower().indexOf(fileName.toLower()) != -1){
-            if (fileInfo.isDir())
-                QDir::remove(fileInfo.filePath());
+            if (fileInfo.isDir()){
+                QDir dir(fileInfo.filePath());
+                dir.removeRecursively();
+            }
             else QFile::remove(fileInfo.filePath());
         }
     }

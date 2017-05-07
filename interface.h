@@ -29,6 +29,8 @@ protected:
     virtual int countMatchInHistory();
     virtual void initCompleter();
 
+    static QFileInfoList getFileList();
+
 private slots:
     void on_toolButton_clicked();
 

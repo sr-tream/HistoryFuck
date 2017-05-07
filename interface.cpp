@@ -34,19 +34,8 @@ void Interface::closeEvent(QCloseEvent *e)
 
 void Interface::fuckHistoryOf(QString fileName)
 {
-    QDir dir(QDir::homePath() + "/AppData/Roaming/Microsoft/Windows/Recent/");
-    dir.setFilter(QDir::Files | QDir::Hidden | QDir::AllEntries | QDir::System);
-    QFileInfoList list = dir.entryInfoList();
-    for (int i = 0; i < list.size(); ++i) {
-        QFileInfo fileInfo = list.at(i);
-        if (fileInfo.fileName() == "." || fileInfo.fileName() ==  "..")
-            continue;
-        if (fileInfo.fileName().toLower().indexOf(fileName.toLower()) != -1)
-            QFile::remove(fileInfo.filePath());
-    }
-    dir.setPath("C:\\Windows\\Prefetch\\");
-    list.clear();
-    list = dir.entryInfoList();
+    QFileInfoList list = getFileList();
+
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
         if (fileInfo.fileName() == "." || fileInfo.fileName() ==  "..")
@@ -58,21 +47,10 @@ void Interface::fuckHistoryOf(QString fileName)
 
 int Interface::countMatchInHistory()
 {
-    QString fileName = ui->file->text();
     int count = 0;
-    QDir dir(QDir::homePath() + "/AppData/Roaming/Microsoft/Windows/Recent/");
-    dir.setFilter(QDir::Files | QDir::Hidden | QDir::AllEntries | QDir::System);
-    QFileInfoList list = dir.entryInfoList();
-    for (int i = 0; i < list.size(); ++i) {
-        QFileInfo fileInfo = list.at(i);
-        if (fileInfo.fileName() == "." || fileInfo.fileName() ==  "..")
-            continue;
-        if (fileInfo.fileName().toLower().indexOf(fileName.toLower()) != -1)
-            ++count;
-    }
-    dir.setPath("C:\\Windows\\Prefetch\\");
-    list.clear();
-    list = dir.entryInfoList();
+    QString fileName = ui->file->text();
+    QFileInfoList list = getFileList();
+
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
         if (fileInfo.fileName() == "." || fileInfo.fileName() ==  "..")
@@ -90,31 +68,26 @@ void Interface::initCompleter()
     ui->file->setCompleter(autoComplete);
 }
 
-QStringList Interface::listHistory()
+QFileInfoList Interface::getFileList()
 {
-    QStringList retList;
     QDir dir(QDir::homePath() + "/AppData/Roaming/Microsoft/Windows/Recent/");
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::AllEntries | QDir::System);
     QFileInfoList list = dir.entryInfoList();
+    dir.setPath("C:\\Windows\\Prefetch\\");
+    list += dir.entryInfoList();
+    return list;
+}
+
+QStringList Interface::listHistory()
+{
+    QStringList retList;
+    QFileInfoList list = getFileList();
+
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
         if (fileInfo.fileName() == "." || fileInfo.fileName() ==  "..")
             continue;
         retList << fileInfo.fileName();
-    }
-    dir.setPath("C:\\Windows\\Prefetch\\");
-    list.clear();
-    list = dir.entryInfoList();
-    for (int i = 0; i < list.size(); ++i) {
-        QFileInfo fileInfo = list.at(i);
-        if (fileInfo.fileName() == "." || fileInfo.fileName() ==  "..")
-            continue;
-        bool add = true;
-        for (int j = 0; j < retList.size(); ++j)
-            if (retList[j] == fileInfo.fileName())
-                add = false;
-        if (add)
-            retList << fileInfo.fileName();
     }
     return retList;
 }

@@ -1,11 +1,15 @@
 #include "interface.h"
 #include "ui_interface.h"
+#include <QApplication>
+#include <QTranslator>
+#include <QLibraryInfo>
 
 Interface::Interface(QString progName, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Interface)
 {
     ui->setupUi(this);
+    loadTranslators();
     myName = progName;
     initCompleter();
 }
@@ -30,6 +34,37 @@ void Interface::changeEvent(QEvent *e)
 void Interface::closeEvent(QCloseEvent *e)
 {
     fuckHistoryOf(myName);
+    QApplication::removeTranslator(translate);
+    delete translate;
+}
+
+void Interface::loadTranslators()
+{
+    translate = new QTranslator();
+    QDir dir(QApplication::applicationDirPath());
+    dir.setFilter(QDir::Files);
+    QFileInfoList list = dir.entryInfoList();
+    QRegExp exp(R"(language_(\w+)\.qm)");
+    bool isEmpty = true;
+
+    for (int i = 0; i < list.size(); ++i){
+        QFileInfo fileInfo = list.at(i);
+        if (exp.indexIn(fileInfo.fileName()) == 0){
+            ui->language->addItem(exp.cap(1));
+            isEmpty = false;
+            static bool isLngSet = false;
+            if (!isLngSet){
+                isLngSet = true;
+                translate->load(fileInfo.fileName(), QApplication::applicationDirPath());
+                QApplication::installTranslator(translate);
+            }
+        }
+    }
+
+    if (isEmpty){
+        ui->language->setHidden(true);
+        ui->label_lng->setHidden(true);
+    }
 }
 
 void Interface::fuckHistoryOf(QString fileName)
@@ -103,12 +138,12 @@ QStringList Interface::listHistory()
 void Interface::on_toolButton_clicked()
 {
     QMessageBox msg;
-    msg.setText("Укажите название файла или программы, которую хотите удалить.\n"
+    msg.setText(tr("Укажите название файла или программы, которую хотите удалить.\n"
                 "Название можно указывать не полностью, а только его часть.\n\n"
                 "Пример. Хотим удалить из истории калькулятор, и мы знаем, что "
                 "его exe фал завется calc.exe, по этому напишем в поле ввода "
                 "\"calc\" и нажмем кнопку \"Почистить\", в результате чего "
-                "калькулятор уйдет из истории.");
+                "калькулятор уйдет из истории."));
     msg.exec();
 }
 
@@ -117,10 +152,10 @@ void Interface::on_file_textChanged(const QString &arg1)
     int count = countMatchInHistory();
     if (count > 0){
         ui->clear->setEnabled(true);
-        ui->matches->setText("Совпадений: " + QString::number(count));
+        ui->matches->setText(tr("Совпадений: ") + QString::number(count));
     } else {
         ui->clear->setEnabled(false);
-        ui->matches->setText("Совпадений: 0");
+        ui->matches->setText(tr("Совпадений: 0"));
     }
 }
 
@@ -130,4 +165,10 @@ void Interface::on_clear_clicked()
     ui->file->clear();
     delete autoComplete;
     initCompleter();
+}
+
+void Interface::on_language_activated(const QString &arg1)
+{
+    translate->load("language_" + arg1, QApplication::applicationDirPath());
+    QApplication::installTranslator(translate);
 }

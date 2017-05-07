@@ -10,6 +10,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = HistoryFuck
 TEMPLATE = app
+TRANSLATIONS += language_English.ts \
+				language_Russian.ts
+CODECFORSRC     = UTF-8
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked as deprecated (the exact warnings
@@ -24,7 +27,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-        interface.cpp
+		interface.cpp
 
 HEADERS  += interface.h
 

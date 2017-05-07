@@ -1,11 +1,13 @@
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
-#include <QtWidgets/QMainWindow>
+#include <QMainWindow>
+#include <QApplication>
 #include <QFileInfo>
 #include <QDir>
 #include <QMessageBox>
 #include <QCompleter>
+#include <QTranslator>
 
 namespace Ui {
 class Interface;
@@ -23,13 +25,16 @@ public:
     static void fuckHistoryOf(QString fileName);
 
 protected:
-    void changeEvent(QEvent *e);
-    void closeEvent(QCloseEvent * e);
+    void changeEvent(QEvent *e) override;
+    void closeEvent(QCloseEvent * e) override;
+    void loadTranslators();
 
     virtual int countMatchInHistory();
     virtual void initCompleter();
 
     static QFileInfoList getFileList();
+
+    QTranslator *translate;
 
 private slots:
     void on_toolButton_clicked();
@@ -37,6 +42,8 @@ private slots:
     void on_file_textChanged(const QString &arg1);
 
     void on_clear_clicked();
+
+    void on_language_activated(const QString &arg1);
 
 private:
     Ui::Interface *ui;

@@ -56,36 +56,6 @@ void Interface::fuckHistoryOf(QString fileName)
     }
 }
 
-bool Interface::checkHistoryOf()
-{
-    QString fileName = ui->file->text();
-    if (fileName.isEmpty())
-        return false;
-
-    QDir dir(QDir::homePath() + "/AppData/Roaming/Microsoft/Windows/Recent/");
-    dir.setFilter(QDir::Files | QDir::Hidden | QDir::AllEntries | QDir::System);
-    QFileInfoList list = dir.entryInfoList();
-    for (int i = 0; i < list.size(); ++i) {
-        QFileInfo fileInfo = list.at(i);
-        if (fileInfo.fileName() == "." || fileInfo.fileName() ==  "..")
-            continue;
-        if (fileInfo.fileName().toLower().indexOf(fileName.toLower()) != -1)
-            return true;
-    }
-    dir.setPath("C:\\Windows\\Prefetch\\");
-    list.clear();
-    list = dir.entryInfoList();
-    for (int i = 0; i < list.size(); ++i) {
-        QFileInfo fileInfo = list.at(i);
-        if (fileInfo.fileName() == "." || fileInfo.fileName() ==  "..")
-            continue;
-        if (fileInfo.fileName().toLower().indexOf(fileName.toLower()) != -1)
-            return true;
-    }
-
-    return false;
-}
-
 int Interface::countHistoryOf()
 {
     QString fileName = ui->file->text();
@@ -163,9 +133,10 @@ void Interface::on_toolButton_clicked()
 
 void Interface::on_file_textChanged(const QString &arg1)
 {
-    if (checkHistoryOf()){
+    int count = countHistoryOf();
+    if (count > 0){
         ui->clear->setEnabled(true);
-        ui->matches->setText("Совпадений: " + QString::number(countHistoryOf()));
+        ui->matches->setText("Совпадений: " + QString::number(count));
     } else {
         ui->clear->setEnabled(false);
         ui->matches->setText("Совпадений: 0");

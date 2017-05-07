@@ -26,7 +26,6 @@ protected:
     void changeEvent(QEvent *e);
     void closeEvent(QCloseEvent * e);
 
-    virtual bool checkHistoryOf();
     virtual int countHistoryOf();
     virtual void initCompleter();
 

@@ -44,31 +44,37 @@ void Interface::loadTranslators()
     dir.setFilter(QDir::Files);
     QFileInfoList list = dir.entryInfoList();
     QRegExp exp(R"(language_(\w+)\.qm)");
-    bool isEmpty = true;
+    int lngCount = 0;
 
     for (int i = 0; i < list.size(); ++i){
         QFileInfo fileInfo = list.at(i);
         if (exp.indexIn(fileInfo.fileName()) == 0){
             ui->language->addItem(exp.cap(1));
-            isEmpty = false;
+            lngCount++;
             static bool isLngSet = false;
-            if ( !isLngSet &&
-                    (sets->value("Language").toString().isEmpty() ||
-                    sets->value("Language").toString() == exp.cap(1)) ){
+            if (!isLngSet){
                 isLngSet = true;
-                translate->load(fileInfo.fileName(), QApplication::applicationDirPath());
-                QApplication::installTranslator(translate);
+                setTranslate(exp.cap(1));
             }
+            if (sets->value("Language").toString() == exp.cap(1))
+                setTranslate(exp.cap(1));
         }
     }
 
     if (!sets->value("Language").toString().isEmpty())
         ui->language->setCurrentText(sets->value("Language").toString());
 
-    if (isEmpty){
+    if (lngCount <= 1){
         ui->language->setHidden(true);
         ui->label_lng->setHidden(true);
     }
+}
+
+void Interface::setTranslate(QString tr)
+{
+    translate->load("language_" + tr, QApplication::applicationDirPath());
+    QApplication::installTranslator(translate);
+    sets->setValue("Language", tr);
 }
 
 void Interface::fuckHistoryOf(QString fileName)
@@ -173,7 +179,5 @@ void Interface::on_clear_clicked()
 
 void Interface::on_language_activated(const QString &arg1)
 {
-    translate->load("language_" + arg1, QApplication::applicationDirPath());
-    QApplication::installTranslator(translate);
-    sets->setValue("Language", arg1);
+    setTranslate(arg1);
 }

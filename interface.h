@@ -29,6 +29,7 @@ protected:
     void changeEvent(QEvent *e) override;
     void closeEvent(QCloseEvent * e) override;
     void loadTranslators();
+    void setTranslate(QString tr);
 
     virtual int countMatchInHistory();
     virtual void initCompleter();

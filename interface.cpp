@@ -40,8 +40,11 @@ void Interface::fuckHistoryOf(QString fileName)
         QFileInfo fileInfo = list.at(i);
         if (fileInfo.fileName() == "." || fileInfo.fileName() ==  "..")
             continue;
-        if (fileInfo.fileName().toLower().indexOf(fileName.toLower()) != -1)
-            QFile::remove(fileInfo.filePath());
+        if (fileInfo.fileName().toLower().indexOf(fileName.toLower()) != -1){
+            if (fileInfo.isDir())
+                QDir::remove(fileInfo.filePath());
+            else QFile::remove(fileInfo.filePath());
+        }
     }
 }
 
@@ -50,6 +53,9 @@ int Interface::countMatchInHistory()
     int count = 0;
     QString fileName = ui->file->text();
     QFileInfoList list = getFileList();
+
+    if (fileName.isEmpty())
+        return 0;
 
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);

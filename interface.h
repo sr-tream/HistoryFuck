@@ -19,14 +19,14 @@ public:
     explicit Interface(QString progName, QWidget *parent = 0);
     ~Interface();
 
-    static QStringList listHistoryOf();
+    static QStringList listHistory();
     static void fuckHistoryOf(QString fileName);
 
 protected:
     void changeEvent(QEvent *e);
     void closeEvent(QCloseEvent * e);
 
-    virtual int countHistoryOf();
+    virtual int countMatchInHistory();
     virtual void initCompleter();
 
 private slots:

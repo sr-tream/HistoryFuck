@@ -56,7 +56,7 @@ void Interface::fuckHistoryOf(QString fileName)
     }
 }
 
-int Interface::countHistoryOf()
+int Interface::countMatchInHistory()
 {
     QString fileName = ui->file->text();
     int count = 0;
@@ -85,12 +85,12 @@ int Interface::countHistoryOf()
 
 void Interface::initCompleter()
 {
-    autoComplete = new QCompleter(listHistoryOf(), this);
+    autoComplete = new QCompleter(listHistory(), this);
     autoComplete->setCaseSensitivity(Qt::CaseInsensitive);
     ui->file->setCompleter(autoComplete);
 }
 
-QStringList Interface::listHistoryOf()
+QStringList Interface::listHistory()
 {
     QStringList retList;
     QDir dir(QDir::homePath() + "/AppData/Roaming/Microsoft/Windows/Recent/");
@@ -133,7 +133,7 @@ void Interface::on_toolButton_clicked()
 
 void Interface::on_file_textChanged(const QString &arg1)
 {
-    int count = countHistoryOf();
+    int count = countMatchInHistory();
     if (count > 0){
         ui->clear->setEnabled(true);
         ui->matches->setText("Совпадений: " + QString::number(count));
